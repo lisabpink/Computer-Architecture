@@ -1,6 +1,12 @@
 """CPU functionality."""
 
 import sys
+SP = 7
+
+#! python3 ls8.py
+#! python3 ls8.py examples/mult.ls8
+#! python3 ls8.py examples/stack.ls8
+#!python3 ls8.py examples/call.ls8
 
 
 class CPU:
@@ -12,6 +18,7 @@ class CPU:
         self.pc = 0
         self.reg = [0] * 8
         self.ram = [0] * 256
+        self.reg[SP] = 0XF4
 
 #! Day 1: Step 2: Add RAM functions
 
@@ -97,6 +104,10 @@ class CPU:
         #! Step 8: Implement a Multiply and Print the Result
         MUL = 0b10100010
 
+        #! Day 3: Step 10: Implement System Stack
+        PUSH = 0b01000101
+        POP = 0b01000110
+
         running = True
 
         while running:
@@ -124,6 +135,18 @@ class CPU:
                 product = self.reg[opr_a] * self.reg[opr_b]
                 self.reg[opr_a] = product
                 self.pc += 3
+
+            elif instruction == PUSH:
+                data = self.reg[opr_a]
+                self.reg[SP] -= 1
+                self.ram_write(self.reg[SP], data)
+                self.pc += 2
+
+            elif instruction == POP:
+                value = self.ram_read(self.reg[SP])
+                self.reg[SP] += 1
+                self.reg[opr_a] = value
+                self.pc += 2
 
             else:
                 print(f"bad input: {bin(instruction)}")
